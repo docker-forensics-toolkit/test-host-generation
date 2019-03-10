@@ -11,7 +11,7 @@ This repository contians several base machines that come with a single httpd con
 You can customise the packer.json files to install more containers etc. by expanding on the "provisioners" section. 
 To perform the build cd into a subdirectory and invoke the command:
 
-  $ packer build packer.json
+    $ packer build packer.json
 
 # Simulate a hard shutdown 
 
