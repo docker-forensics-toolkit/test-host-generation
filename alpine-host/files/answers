@@ -1,0 +1,14 @@
+KEYMAPOPTS="us us"
+HOSTNAMEOPTS="-n localhost"
+INTERFACESOPTS="auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+"
+DNSOPTS="-n 8.8.8.8"
+TIMEZONEOPTS="-z Japan"
+PROXYOPTS="none"
+SSHDOPTS="-c openssh"
+NTPOPTS="-c none"
+DISKOPTS="-m sys /dev/sda"

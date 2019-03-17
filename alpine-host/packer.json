@@ -1,0 +1,60 @@
+{
+  "variables":
+    {
+      "iso_url": "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-standard-3.9.2-x86_64.iso",
+      "iso_checksum": "3f4b44ced687218b0a29ac561b4cd35cb604bd1ef4c7c6e26beb5b844a5544e5"
+    },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Linux_64",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "sha256",
+      "disk_size": "6000",
+      "memory": 2048,
+      "ssh_username": "root",
+      "ssh_password": "alpine",
+      "http_directory": "files",
+      "ssh_timeout" : "20m",
+      "shutdown_command": "poweroff -f -n",
+      "boot_command": [
+        "root<enter><wait>",
+        "ifconfig eth0 up && udhcpc -i eth0<enter><wait5>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+        "sed -i \"201i echo \\\"PermitRootLogin yes\\\" > /etc/ssh/sshd_config\" /sbin/setup-alpine",
+        "<enter><wait>",
+        "sed -i \"201i rc-service sshd stop\" /sbin/setup-alpine # Disabling ssh during setup to avoid packer issues",
+        "<enter><wait>",
+        "setup-alpine -f answers<enter><wait10>",
+        "alpine<enter><wait>",
+        "alpine<enter><wait>",
+        "<wait5>",
+        "1<enter>",
+        "<wait5>",
+        "y<enter>",
+        "<wait1m>",
+        "reboot<enter>"
+      ],
+      "boot_wait": "15s"
+    }
+  ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "apk add --update --repository http://dl-cdn.alpinelinux.org/alpine/edge/community --repository http://dl-cdn.alpinelinux.org/alpine/edge/main docker",
+                "rc-update add docker boot",
+                "service docker start",
+                "until /usr/bin/docker ps 2>&1| grep STATUS>/dev/null; do  sleep 1; done;  >/dev/null",
+                "docker run -d --name \"apache\" --restart always httpd:2.4.38-alpine"
+            ]
+        }
+    ],
+    "post-processors": [
+	{
+	  "type": "shell-local",
+	  "inline": ["printenv", "for disk in output-virtualbox-iso/*.vmdk; do vboxmanage clonehd \"$disk\" \"$disk\".raw --format RAW; done"]
+	}
+    ]
+}
