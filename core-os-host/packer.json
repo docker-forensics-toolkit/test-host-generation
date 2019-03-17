@@ -20,11 +20,16 @@
       "ssh_timeout" : "10m",
       "shutdown_command": "sudo poweroff --force --force --no-sync",
       "boot_command": [
+        "echo \"Stopping sshd to prevent packer from connecting prematurely\"",
+        "<enter>",
+        "sudo systemctl stop sshd",
+        "<enter>",
+        "sudo systemctl mask sshd.socket",
+        "<enter>",
         "curl -sLo /tmp/ignition.json http://{{ .HTTPIP }}:{{ .HTTPPort }}/ignition.json",
         "<enter>",
         "sudo coreos-install -d /dev/sda -C {{user `release`}} -i /tmp/ignition.json",
         "<enter>",
-          "<wait1m>",
         "sudo reboot",
         "<enter>"
       ],
