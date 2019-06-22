@@ -6,8 +6,8 @@ iface lo inet loopback
 auto eth0
 iface eth0 inet dhcp
 "
-DNSOPTS="-n 8.8.8.8"
-TIMEZONEOPTS="-z Japan"
+DNSOPTS="-n 1.1.1.1"
+TIMEZONEOPTS="-z Germany"
 PROXYOPTS="none"
 SSHDOPTS="-c openssh"
 NTPOPTS="-c none"

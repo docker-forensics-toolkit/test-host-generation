@@ -16,8 +16,9 @@
       "ssh_username": "root",
       "ssh_password": "{{user `root_password`}}",
       "http_directory": "files",
+      "shutdown_command": "poweroff -f",
       "ssh_timeout": "20m",
-      "shutdown_command": "poweroff -f -n",
+      "headless": false,
       "boot_command": [
         "root<enter><wait>",
         "ifconfig eth0 up && udhcpc -i eth0<enter><wait5>",
@@ -47,7 +48,10 @@
         "rc-update add docker boot",
         "service docker start",
         "until /usr/bin/docker ps 2>&1| grep STATUS>/dev/null; do  sleep 1; done;  >/dev/null",
-        "docker run -d --name \"apache\" --restart always httpd:2.4.38-alpine"
+        "docker run -d --name apache --restart always httpd:2.4.38-alpine",
+        "mkdir -p /var/mysql/datadir",
+        "docker run -d --name mysql -v /var/mysql/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=supersecret mysql:8.0.16",
+        "docker stop mysql"
       ]
     }
   ],
