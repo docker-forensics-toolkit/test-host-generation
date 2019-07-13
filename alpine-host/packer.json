@@ -23,6 +23,7 @@
         "root<enter><wait>",
         "ifconfig eth0 up && udhcpc -i eth0<enter><wait5>",
         "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/Dockerfile<enter><wait>",
         "sed -i \"201i echo \\\"PermitRootLogin yes\\\" > /etc/ssh/sshd_config\" /sbin/setup-alpine",
         "<enter><wait>",
         "sed -i \"201i rc-service sshd stop\" /sbin/setup-alpine # Disabling ssh during setup to avoid packer issues",
@@ -51,7 +52,8 @@
         "docker run -d --name apache --restart always httpd:2.4.38-alpine",
         "mkdir -p /var/mysql/datadir",
         "docker run -d --name mysql -v /var/mysql/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=supersecret mysql:8.0.16",
-        "docker stop mysql"
+        "docker stop mysql",
+        "docker run -i --rm python:3 python -c \"print(\\\"PWNED\\\")\""
       ]
     }
   ],
