@@ -1,5 +1,6 @@
 # Cache objects
 packer_cache/
+output-old/
 
 # For built boxes
 *.box

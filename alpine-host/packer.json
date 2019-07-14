@@ -49,12 +49,21 @@
         "rc-update add docker boot",
         "service docker start",
         "until /usr/bin/docker ps 2>&1| grep STATUS>/dev/null; do  sleep 1; done;  >/dev/null",
-        "docker run -d --name apache --restart always httpd:2.4.38-alpine",
+        "docker run -d --name apache --expose 80 --restart always httpd:2.4.38-alpine",
         "mkdir -p /var/mysql/datadir",
         "docker run -d --name mysql -v /var/mysql/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=supersecret mysql:8.0.16",
-        "docker stop mysql",
-        "docker run -i --rm python:3 python -c \"print(\\\"PWNED\\\")\""
+        "docker stop mysql"
       ]
+    },
+    {
+      "type": "file",
+      "source": "files/Dockerfile",
+      "destination": "/tmp/Dockerfile"
+    },
+    {
+      "type": "shell",
+        "inline": ["cd /tmp/ && docker build .",
+        "docker run -i --rm python:3 python -c \"print(\\\"PWNED\\\")\""]
     }
   ],
   "post-processors": [

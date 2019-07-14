@@ -27,8 +27,9 @@
     "filesystems": [
       {
         "mount": {
-          "device": "/dev/disk/by-partlabel/ROOT",
+          "device": "/dev/disk/by-label/ROOT",
           "format": "ext4",
+          "wipeFilesystem": true,
           "label": "ROOT"
         },
         "name": "rootfilesystem"
