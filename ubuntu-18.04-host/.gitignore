@@ -1,2 +1,3 @@
 output-virtualbox-iso
+*.raw
 packer_cache

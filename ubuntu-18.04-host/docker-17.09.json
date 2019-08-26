@@ -1,9 +1,11 @@
 {
   "variables": {
+     "docker_version": "17.09"
   },
   "builders": [
     {
       "type": "virtualbox-iso",
+      "output_directory": "docker-{{user `docker_version`}}",
       "boot_command": [
         "<esc><wait>",
         "<esc><wait>",
@@ -29,7 +31,7 @@
         " -- <wait>",
         "<enter><wait>"
       ],
-      "boot_wait": "10s",
+      "boot_wait": "4s",
       "disk_size": 10240,
       "guest_os_type": "Ubuntu_64",
       "http_directory": "files",
@@ -51,7 +53,14 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": "mkdir /tmp/docker-build"
+       "expect_disconnect": true,
+        "inline": [
+            "mkdir -p /tmp/docker-build",
+	    "sudo snap install docker --channel={{user `docker_version`}}/candidate",
+	    "sudo addgroup --system docker",
+	    "sudo adduser $USER docker",
+	    "sudo reboot"
+        ]
     },
     {
       "type": "file",
@@ -61,12 +70,11 @@
     {
       "type": "shell",
       "inline": [
-        "docker run -d --name apache --expose 80 --restart always httpd:2.4.38-alpine",
-        "sudo mkdir -p /var/mysql/datadir",
-        "docker run -d --name mysql -v /var/mysql/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=supersecret mysql:8.0.16",
-        "docker stop mysql",
-        "cd /tmp/docker-build/ && docker build .",
-        "docker run -i --rm python:3 python -c \"print(\\\"PWNED\\\")\""
+        "/snap/bin/docker run -d --name apache --expose 80 --restart always httpd:2.4.38-alpine",
+        "/snap/bin/docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=supersecret mysql:8.0.16",
+        "/snap/bin/docker stop mysql",
+        "cd /tmp/docker-build/ && /snap/bin/docker build .",
+        "/snap/bin/docker run -i --rm python:3 python -c \"print(\\\"PWNED\\\")\""
       ]
     }
   ],
@@ -74,7 +82,7 @@
     {
       "type": "shell-local",
       "inline": [
-        "for disk in output-virtualbox-iso/*.vmdk; do vboxmanage clonehd \"$disk\" \"$disk\".raw --format RAW; done"
+        "for disk in docker-17.03/*.vmdk; do vboxmanage clonehd \"$disk\" docker-{{user `docker_version`}}-host.raw --format RAW; done"
       ]
     }
   ]

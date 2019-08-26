@@ -2,5 +2,9 @@
 packer_cache/
 output-old/
 
+*.vmdk
+*.raw
+*.ovf
+
 # For built boxes
 *.box
